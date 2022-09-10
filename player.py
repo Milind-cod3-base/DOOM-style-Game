@@ -2,6 +2,14 @@ from settings import *
 import pygame as pg
 import math
 
+# initialising pygame joystick
+pg.joystick.init()
+
+# setting xbox controller at ID 0
+xbox = pg.joystick.Joystick(0)
+# initialising the controller
+xbox.init()
+
 
 class Player:
     def __init__(self, game):
@@ -38,8 +46,21 @@ class Player:
         self.check_game_over()
 
     def single_fire_event(self, event):
+
         if event.type == pg.MOUSEBUTTONDOWN:
             if event.button == 1 and not self.shot and not self.game.weapon.reloading:
+                self.game.sound.shotgun.play()
+                self.shot = True
+                self.game.weapon.reloading = True
+
+        # if the player uses xbox controller
+        if event.type == pg.JOYAXISMOTION:
+
+            # RT button of controller for shooting
+            gun = xbox.get_axis(5)
+
+            # setting sensitivity for trigger
+            if gun > -0.4 and not self.shot and not self.game.weapon.reloading:
                 self.game.sound.shotgun.play()
                 self.shot = True
                 self.game.weapon.reloading = True
@@ -86,9 +107,10 @@ class Player:
 
     def draw(self):
         pg.draw.line(self.game.screen, 'yellow', (self.x * 100, self.y * 100),
-                    (self.x * 100 + WIDTH * math.cos(self.angle),
+                     (self.x * 100 + WIDTH * math.cos(self.angle),
                      self.y * 100 + WIDTH * math. sin(self.angle)), 2)
-        pg.draw.circle(self.game.screen, 'green', (self.x * 100, self.y * 100), 15)
+        pg.draw.circle(self.game.screen, 'green',
+                       (self.x * 100, self.y * 100), 15)
 
     def mouse_control(self):
         mx, my = pg.mouse.get_pos()
