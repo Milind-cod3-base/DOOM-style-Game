@@ -86,6 +86,35 @@ class Player:
         if keys[pg.K_d]:
             dx += -speed_sin
             dy += speed_cos
+        
+        for event in pg.event.get():
+        # if the player uses xbox controller
+            if event.type == pg.JOYAXISMOTION:
+
+                
+                lr = xbox.get_axis(0)
+                fb = xbox.get_axis(1)
+
+                # move right
+                if lr > 0.2:
+                    dx += -speed_sin
+                    dy += speed_cos
+                    
+                
+                # move left
+                if lr < -0.2:
+                    dx += speed_sin
+                    dy += -speed_cos
+
+                # move forward
+                if fb < -0.2:
+                    dx += speed_cos
+                    dy += speed_sin
+
+                # move back
+                if fb > 0.2:
+                    dx += speed_cos
+                    dy += speed_sin
 
         self.check_wall_collision(dx, dy)
 
@@ -120,10 +149,16 @@ class Player:
         self.rel = max(-MOUSE_MAX_REL, min(MOUSE_MAX_REL, self.rel))
         self.angle += self.rel * MOUSE_SENSITIVITY * self.game.delta_time
 
+    # function to get view direction for xbox 
+    def xboxDirection(self):
+        pass
+    
+
     def update(self):
         self.movement()
         self.mouse_control()
         self.recover_health()
+        self.xboxDirection()
 
     @property
     def pos(self):
